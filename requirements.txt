@@ -13,13 +13,11 @@ certifi==2021.5.30
 cffi==1.14.6
 charset-normalizer==2.0.4
 click==7.1.2
-cycler==0.10.0
 debugpy==1.4.1
 decorator==5.0.9
 defusedxml==0.7.1
 entrypoints==0.3
 flake8==3.9.2
-fonttools==4.25.0
 gitdb==4.0.7
 GitPython==3.1.18
 idna==3.2
@@ -35,16 +33,13 @@ jupyter-client==7.0.1
 jupyter-core==4.7.1
 jupyterlab-pygments==0.1.2
 jupyterlab-widgets==1.0.0
-kiwisolver @ file:///opt/concourse/worker/volumes/live/f8867fdb-2fa2-4145-73d9-4d6f6dad5f7c/volume/kiwisolver_1612282424136/work
 MarkupSafe @ file:///opt/concourse/worker/volumes/live/1bcf0940-5bf8-4171-61e3-2133f5885e8b/volume/markupsafe_1621528148241/work
-matplotlib @ file:///opt/concourse/worker/volumes/live/ea31f923-d5bd-4af7-6d95-b910b4a0fa5f/volume/matplotlib-suite_1628011455335/work
 matplotlib-inline==0.1.2
 mccabe==0.6.1
 mistune==0.8.4
 mkl-fft==1.3.0
 mkl-random @ file:///opt/concourse/worker/volumes/live/0cda23d8-7460-44b2-7e5d-3c76a8a0ca7e/volume/mkl_random_1626186083266/work
 mkl-service==2.4.0
-munkres==1.1.4
 nbclient==0.5.4
 nbconvert==6.1.0
 nbformat==5.1.3
@@ -52,14 +47,13 @@ nest-asyncio==1.5.1
 notebook==6.4.3
 numexpr @ file:///opt/concourse/worker/volumes/live/8a490d79-0e07-4fed-40fc-a78f896e4811/volume/numexpr_1618856522733/work
 numpy==1.21.2
-olefile==0.46
 packaging==21.0
 pandas==1.3.2
 pandocfilters==1.4.3
 parso==0.8.2
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow @ file:///opt/concourse/worker/volumes/live/140f8506-0993-42b0-466b-ccbbcb5df83e/volume/pillow_1625655825783/work
+Pillow==8.3.1
 prometheus-client==0.11.0
 prompt-toolkit==3.0.20
 protobuf==3.17.3
@@ -71,7 +65,7 @@ pycparser==2.20
 pydeck==0.7.0
 pyflakes==2.3.1
 Pygments==2.10.0
-pyparsing @ file:///home/linux1/recipes/ci/pyparsing_1610983426697/work
+pyparsing==2.4.7
 pyrsistent @ file:///opt/concourse/worker/volumes/live/f4188029-c4e5-4376-5777-96466a6d9de1/volume/pyrsistent_1625052316913/work
 python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
 pytz @ file:///tmp/build/80754af9/pytz_1612215392582/work
@@ -87,7 +81,7 @@ terminado==0.11.1
 testpath==0.5.0
 toml==0.10.2
 toolz @ file:///home/linux1/recipes/ci/toolz_1610987900194/work
-tornado @ file:///opt/concourse/worker/volumes/live/2c1a63a2-006b-48ee-56b9-0cfe8b4927f9/volume/tornado_1606942321278/work
+tornado==6.1
 traitlets==5.0.5
 tzlocal==3.0
 urllib3==1.26.6
