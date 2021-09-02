@@ -1,0 +1,14 @@
+name: streamlit
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - psycopg2
+  - pandas
+  - altair
+  - conda-forge::streamlit
+  - pip
+  - pip:
+    - streamlit-aggrid
+
+prefix: /Users/benjaminlis/anaconda3/envs/streamlit
