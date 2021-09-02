@@ -1,0 +1,6 @@
+python==3.9
+psycopg2
+pandas
+altair
+streamlit
+streamlit-aggrid
