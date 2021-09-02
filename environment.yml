@@ -6,6 +6,7 @@ dependencies:
   - psycopg2
   - pandas
   - altair
+  - pip
   - pip:
     - streamlit
     - streamlit-aggrid
