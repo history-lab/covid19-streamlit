@@ -7,6 +7,6 @@ dependencies:
   - pandas
   - altair
   - pip:
-    - streamlit==0.87.0
-    - streamlit-aggrid==0.2.1
+    - streamlit
+    - streamlit-aggrid
 prefix: /Users/benjaminlis/anaconda3/envs/streamlit
