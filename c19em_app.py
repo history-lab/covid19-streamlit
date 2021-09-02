@@ -4,6 +4,7 @@ import pandas as pd
 import altair as alt
 import psycopg2
 from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 
 st.set_page_config(page_title="FOIA Explorer: COVID-19 Emails", layout="wide")
@@ -15,6 +16,7 @@ st.title("FOIA Explorer: COVID-19 Emails")
           hash_funcs={"_thread.RLock": lambda _: None})
 def init_connection():
     return psycopg2.connect(**st.secrets["postgres"])
+
 
 # perform query - ses st.cache to only rerun once
 @st.cache
@@ -52,15 +54,22 @@ st.altair_chart(c, use_container_width=True)
 
 """ ## Individual Emails """
 emqry = """
-select sent, subject, topic, from_email "from",
-       to_emails "to", cc_emails cc, e.email_id, file_pg_start pg_number
+select sent, subject, topic, from_email "from", to_emails "to", cc_emails cc,
+       body, e.email_id, file_pg_start pg_number
     from covid19.emails e
        left join top_topic_emails t on (e.email_id = t.email_id)
     order by sent nulls last
 """
 emdf = pd.read_sql_query(emqry, conn)
 emdf['sent'] = pd.to_datetime(emdf['sent'], utc=True)
-AgGrid(emdf)
+#
+gb = GridOptionsBuilder.from_dataframe(emdf)
+gb.configure_pagination()
+gb.configure_default_column(groupable=True, value=True, enableRowGroup=True,
+                            aggFunc="sum", editable=True)
+gridOptions = gb.build()
+
+AgGrid(emdf, gridOptions=gridOptions, enable_enterprise_modules=True)
 
 """
 ## About
