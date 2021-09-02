@@ -9,6 +9,6 @@ dependencies:
   - conda-forge::streamlit
   - pip
   - pip:
-    - streamlit-aggrid
+    - streamlit-aggrid==0.2.1
 
 prefix: /Users/benjaminlis/anaconda3/envs/streamlit
