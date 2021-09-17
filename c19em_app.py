@@ -38,16 +38,19 @@ Institute of Allergy and Infectious Diseases.
 - https://www.documentcloud.org/documents/20793561-leopold-nih-foia-anthony-fauci-emails
 """
 
-""" ## Emails by Month"""
+"""## Daily Email Volume, January - May 2020"""
+
 emcnts = """
-select coalesce(to_char(sent,'YYYY-MM'), 'Unknown') year_month,
-       count(*) emails
-   from covid19.emails
-   group by year_month
-   order by year_month"""
+select to_char(date_trunc('day',sent), 'MM/DD') date, count(*) emails
+    from covid19.emails
+    where sent >= '2020-01-01'
+    group by date
+    order by date;
+"""
+
 cntsdf = pd.read_sql_query(emcnts, conn)
 c = alt.Chart(cntsdf).mark_bar().encode(
-    x='year_month',
+    x='date',
     y='emails'
 )
 st.altair_chart(c, use_container_width=True)
@@ -58,6 +61,7 @@ select sent, subject, topic, from_email "from", to_emails "to", cc_emails cc,
        body, e.email_id, file_pg_start pg_number
     from covid19.emails e
        left join top_topic_emails t on (e.email_id = t.email_id)
+    where sent >= '2020-01-01'
     order by sent nulls last
 """
 emdf = pd.read_sql_query(emqry, conn)
