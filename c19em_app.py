@@ -27,8 +27,23 @@ def run_query(query):
         return cur.fetchall()
 
 
+@st.cache
+def get_entity_list(qual):
+    entsfw = 'SELECT entity from covid19.entities where enttype '
+    entorder = 'order by entity'
+    lov = []
+    rows = run_query(entsfw + qual + entorder)
+    for r in rows:
+        lov.append(r[0])
+    return(lov)
+
+
 conn = init_connection()
-# foias = run_query("SELECT file_id, title from covid19.files order by title")
+
+# build dropdown lists for entity search
+person_list = get_entity_list("= 'PERSON' ")
+org_list = get_entity_list("= 'ORG' ")
+loc_list = get_entity_list("in ('GPE', 'LOC', 'NORP', 'FAC') ")
 
 
 st.selectbox('FOIA', ["Fauci Emails"])
@@ -59,26 +74,42 @@ st.altair_chart(c, use_container_width=True)
 """ ## Search Emails """
 query = False
 form = st.form('query_params')
-# persons = form.multiselect('Person(s):', ['Fauci', 'Collins'])
-# orgs = form.multiselect('Organization(s):', ['NIH', 'White House'])
-# locations = form.multiselect('Location(s):', ['Brooklyn'])
 begin_date = form.date_input('Start Date', datetime.date(2020, 1, 23))
 end_date = form.date_input('End Date', datetime.date(2020, 5, 6))
+persons = form.multiselect('Person(s):', person_list)
+orgs = form.multiselect('Organization(s):', org_list)
+locations = form.multiselect('Location(s):', loc_list)
 query = form.form_submit_button(label='Execute Search')
 
 if query:
     """ ## Search Results """
-    # entities = persons + orgs + locations
-    # st.write(entities)
+    entities = persons + orgs + locations
     selfrom = """
     select sent, subject, topic, from_email "from", to_emails "to",
            cc_emails cc, body, e.email_id, file_pg_start pg_number
         from covid19.emails e left join covid19.top_topic_emails t
             on (e.email_id = t.email_id)"""
     where = f"where sent between '{begin_date}' and '{end_date}' "
+    where_ent = ''
     orderby = 'order by sent'
-    st.write(where)
-    emqry = selfrom + where + orderby
+    qry_explain = where
+    if entities:
+        # build entity in list
+        entincl = '('
+        for e in entities:
+            entincl += f"'{e}', "
+        entincl = entincl[:-2] + ')'
+        # form subquery
+        where_ent = """
+        and e.email_id in
+            (select eem.email_id
+                from covid19.entities ent join covid19.entity_emails eem
+                    on (ent.entity_id = eem.entity_id)
+             where ent.entity in """ + f'{entincl}) '
+        qry_explain += f"and email references at least one of {entincl}"
+    st.write(qry_explain)
+    # execute query
+    emqry = selfrom + where + where_ent + orderby
     emdf = pd.read_sql_query(emqry, conn)
     emdf['sent'] = pd.to_datetime(emdf['sent'], utc=True)
     #
