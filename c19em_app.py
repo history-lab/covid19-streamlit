@@ -121,7 +121,10 @@ if query:
     gridOptions = gb.build()
 
     AgGrid(emdf, gridOptions=gridOptions, enable_enterprise_modules=True)
-
+    # download results as CSV
+    csv = emdf.to_csv().encode('utf-8')
+    st.download_button(label="CSV download", data=csv,
+                       file_name='foia-covid19.csv', mime='text/csv')
 """
 ## About
 The FOIA Explorer and associated tools were created by Columbia
