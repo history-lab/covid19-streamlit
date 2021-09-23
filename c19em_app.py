@@ -138,10 +138,11 @@ selected = grid_response['selected_rows']
 # st.write(f'page number: {selected[0]["pg_number"]}')
 if selected:
     """## Document Preview"""
+    pg = int(selected[0]["pg_number"])
     doc_url = f'https://s3.documentcloud.org/documents/20793561/\
-leopold-nih-foia-anthony-fauci-emails.pdf#page={selected[0]["pg_number"]}'
+leopold-nih-foia-anthony-fauci-emails.pdf#page={pg}'
     st.write(f'View the full document on [DocumentCloud]({doc_url})')
-    with open('./pdfs/fauci-cnn.pdf', "rb") as f:
+    with open(f'./pdfs/fauci_{pg}.pdf', "rb") as f:
         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
         pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" \
 width="100%" height="1100" type="application/pdf">'
