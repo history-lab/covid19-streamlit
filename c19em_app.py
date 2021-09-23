@@ -142,11 +142,11 @@ if selected:
     doc_url = f'https://s3.documentcloud.org/documents/20793561/\
 leopold-nih-foia-anthony-fauci-emails.pdf#page={pg}'
     st.write(f'View the full document on [DocumentCloud]({doc_url})')
-    with open(f'./pdfs/fauci_{pg}.pdf', "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-        pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" \
-width="100%" height="1100" type="application/pdf">'
-    st.markdown(pdf_display, unsafe_allow_html=True)
+#    with open(f'./pdfs/fauci_{pg}.pdf', "rb") as f:
+#        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+#        pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" \
+# width="100%" height="1100" type="application/pdf">'
+#    st.markdown(pdf_display, unsafe_allow_html=True)
 """
 ## About
 The FOIA Explorer and associated tools were created by Columbia
