@@ -133,13 +133,19 @@ grid_response = AgGrid(emdf, gridOptions=gridOptions,
                        allow_unsafe_jscode=True,
                        update_mode=GridUpdateMode.SELECTION_CHANGED)
 selected = grid_response['selected_rows']
-st.write(selected)
-"""## Document Preview"""
-with open('./pdfs/fauci-cnn.pdf', "rb") as f:
-    base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" \
+# st.write(selected)
+# st.write(f'email id: {selected[0]["email_id"]}')
+# st.write(f'page number: {selected[0]["pg_number"]}')
+if selected:
+    """## Document Preview"""
+    doc_url = f'https://s3.documentcloud.org/documents/20793561/\
+leopold-nih-foia-anthony-fauci-emails.pdf#page={selected[0]["pg_number"]}'
+    st.write(f'View the full document on [DocumentCloud]({doc_url})')
+    with open('./pdfs/fauci-cnn.pdf', "rb") as f:
+        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+        pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" \
 width="100%" height="1100" type="application/pdf">'
-st.markdown(pdf_display, unsafe_allow_html=True)
+    st.markdown(pdf_display, unsafe_allow_html=True)
 """
 ## About
 The FOIA Explorer and associated tools were created by Columbia
