@@ -142,7 +142,7 @@ if selected:
     pg = int(selected[0]["pg_number"])
     doc_url = f'https://s3.documentcloud.org/documents/20793561/\
 leopold-nih-foia-anthony-fauci-emails.pdf#page={pg}'
-    st.write(f'View the full document on [DocumentCloud]({doc_url})')
+    st.write(f'View the full document on DocumentCloud: {doc_url}')
 #    st.markdown("""<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=http://foiarchive-covid-19.s3.amazonaws.com/fauci/pdfs/fauci_1.pdf" width="100%" height="1100">""", unsafe_allow_html=True)
 #     with open(f'./pdfs/fauci_{pg}.pdf', "rb") as f:
     preview_url = f'http://foiarchive-covid-19.s3.amazonaws.com/fauci/pdfs/fauci_{pg}.pdf'
