@@ -4,6 +4,7 @@ import pandas as pd
 import altair as alt
 import psycopg2
 import datetime
+import requests
 import base64
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -137,16 +138,22 @@ selected = grid_response['selected_rows']
 # st.write(f'email id: {selected[0]["email_id"]}')
 # st.write(f'page number: {selected[0]["pg_number"]}')
 if selected:
-    """## Document Preview"""
+    """## Email Preview"""
     pg = int(selected[0]["pg_number"])
     doc_url = f'https://s3.documentcloud.org/documents/20793561/\
 leopold-nih-foia-anthony-fauci-emails.pdf#page={pg}'
     st.write(f'View the full document on [DocumentCloud]({doc_url})')
-#    with open(f'./pdfs/fauci_{pg}.pdf', "rb") as f:
-#        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-#        pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" \
-# width="100%" height="1100" type="application/pdf">'
-#    st.markdown(pdf_display, unsafe_allow_html=True)
+#    st.markdown("""<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=http://foiarchive-covid-19.s3.amazonaws.com/fauci/pdfs/fauci_1.pdf" width="100%" height="1100">""", unsafe_allow_html=True)
+#     with open(f'./pdfs/fauci_{pg}.pdf', "rb") as f:
+    preview_url = f'http://foiarchive-covid-19.s3.amazonaws.com/fauci/pdfs/fauci_{pg}.pdf'
+    response = requests.get(preview_url)
+    if response.content:
+        base64_pdf = base64.b64encode(response.content).decode('utf-8')
+        pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" \
+width="100%" height="1100" type="application/pdf">'
+        st.markdown(pdf_display, unsafe_allow_html=True)
+    else:
+        st.write('** Preview Unavailable **')
 """
 ## About
 The FOIA Explorer and associated tools were created by Columbia
