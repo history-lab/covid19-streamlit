@@ -4,11 +4,8 @@ import pandas as pd
 import altair as alt
 import psycopg2
 import datetime
-import requests
-import base64
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
-from st_aggrid.shared import GridUpdateMode
 
 
 st.set_page_config(page_title="FOIA Explorer: COVID-19 Emails", layout="wide")
