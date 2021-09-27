@@ -74,7 +74,7 @@ c = alt.Chart(cntsdf).mark_bar().encode(
 )
 st.altair_chart(c, use_container_width=True)
 
-""" ## Search Emails """
+"""## Search Emails """
 query = False
 form = st.form('query_params')
 begin_date = form.date_input('Start Date', datetime.date(2020, 1, 23))
@@ -88,8 +88,15 @@ query = form.form_submit_button(label='Execute Search')
 """ ## Search Results """
 entities = persons + orgs + locations
 selfrom = """
-select sent, subject, topic, from_email "from", to_emails "to", cc_emails cc,
-       body, e.email_id, file_pg_start pg_number
+select sent,
+       coalesce(subject, '') subject,
+       coalesce(topic, '') topic,
+       coalesce(from_email, '') "from",
+       coalesce(to_emails, '') "to",
+       -- coalesce(cc_emails, '') cc,
+       -- coalesce(substr(body, 1, 1024), '') body,
+       e.email_id,
+       file_pg_start pg_number
     from covid19.emails e left join covid19.top_topic_emails t
         on (e.email_id = t.email_id)"""
 where = f"where sent between '{begin_date}' and '{end_date}' "
@@ -114,46 +121,40 @@ st.write(qry_explain)
 # execute query
 emqry = selfrom + where + where_ent + orderby
 emdf = pd.read_sql_query(emqry, conn)
-emdf['sent'] = pd.to_datetime(emdf['sent'], utc=True)
+# emdf['sent'] = pd.to_datetime(emdf['sent'], utc=True)
 # download results as CSV
 csv = emdf.to_csv().encode('utf-8')
 st.download_button(label="CSV download", data=csv,
                    file_name='foia-covid19.csv', mime='text/csv')
 # generate AgGrid
 gb = GridOptionsBuilder.from_dataframe(emdf)
-gb.configure_pagination()
-gb.configure_selection('single')
 gb.configure_default_column(groupable=True, value=True,
                             enableRowGroup=True, aggFunc="sum",
-                            editable=True)
+                            editable=False)
+gb.configure_selection('single')
+gb.configure_pagination(paginationAutoPageSize=True)
+gb.configure_grid_options(domLayout='normal')
 gridOptions = gb.build()
 
-grid_response = AgGrid(emdf, gridOptions=gridOptions,
-                       reload_data=True,
-                       enable_enterprise_modules=True,
-                       allow_unsafe_jscode=True,
-                       update_mode=GridUpdateMode.SELECTION_CHANGED)
+grid_response = AgGrid(emdf,
+                       gridOptions=gridOptions,
+                       width='100%',
+                       return_mode_values='AS_INPUT',
+                       update_mode='SELECTION_CHANGED',
+                       allow_unsafe_jscode=False,
+                       enable_enterprise_modules=False)
 selected = grid_response['selected_rows']
 # st.write(selected)
-# st.write(f'email id: {selected[0]["email_id"]}')
-# st.write(f'page number: {selected[0]["pg_number"]}')
+"""## Email Preview"""
 if selected:
-    """## Email Preview"""
     pg = int(selected[0]["pg_number"])
-    doc_url = f'https://s3.documentcloud.org/documents/20793561/\
-leopold-nih-foia-anthony-fauci-emails.pdf#page={pg}'
+    doc_url = f'https://s3.documentcloud.org/documents/20793561/leopold-nih-\
+foia-anthony-fauci-emails.pdf#page={pg}'
     st.write(f'View the full document on DocumentCloud: {doc_url}')
-#    st.markdown("""<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=http://foiarchive-covid-19.s3.amazonaws.com/fauci/pdfs/fauci_1.pdf" width="100%" height="1100">""", unsafe_allow_html=True)
-#     with open(f'./pdfs/fauci_{pg}.pdf', "rb") as f:
-    preview_url = f'http://foiarchive-covid-19.s3.amazonaws.com/fauci/pdfs/fauci_{pg}.pdf'
-    response = requests.get(preview_url)
-    if response.content:
-        base64_pdf = base64.b64encode(response.content).decode('utf-8')
-        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" \
-width="100%" height="1100" type="application/pdf">'
-        st.markdown(pdf_display, unsafe_allow_html=True)
-    else:
-        st.write('** Preview Unavailable **')
+    st.markdown(f'<iframe src="https://drive.google.com/viewerng/viewer?\
+embedded=true&url=https://foiarchive-covid-19.s3.amazonaws.com/fauci/pdfs/\
+fauci_{pg}.pdf" width="100%" height="1100">', unsafe_allow_html=True)
+
 """
 ## About
 The FOIA Explorer and associated tools were created by Columbia
