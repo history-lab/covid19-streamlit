@@ -57,7 +57,7 @@ Institute of Allergy and Infectious Diseases.
 """## Daily Email Volume, January - May 2020"""
 
 emcnts = """
-select to_char(date_trunc('day',sent), 'MM/DD') date, count(*) emails
+select date(sent) date, count(*) emails
     from covid19.emails
     where sent >= '2020-01-01'
     group by date
@@ -66,7 +66,7 @@ select to_char(date_trunc('day',sent), 'MM/DD') date, count(*) emails
 
 cntsdf = pd.read_sql_query(emcnts, conn)
 c = alt.Chart(cntsdf).mark_bar().encode(
-    x=alt.X('date:T', scale=alt.Scale(domain=('01/23', '05/06'))),
+    x=alt.X('date:T', scale=alt.Scale(domain=('2020-01-23', '2020-05-06'))),
     y=alt.Y('emails:Q', scale=alt.Scale(domain=(0, 60)))
     )
 st.altair_chart(c, use_container_width=True)
