@@ -66,9 +66,9 @@ select to_char(date_trunc('day',sent), 'MM/DD') date, count(*) emails
 
 cntsdf = pd.read_sql_query(emcnts, conn)
 c = alt.Chart(cntsdf).mark_bar().encode(
-    x='date',
-    y='emails'
-)
+    x=alt.X('date:T', scale=alt.Scale(domain=('01/23', '05/06'))),
+    y=alt.Y('emails:Q', scale=alt.Scale(domain=(0, 60)))
+    )
 st.altair_chart(c, use_container_width=True)
 
 """## Search Emails """
@@ -125,17 +125,14 @@ st.download_button(label="CSV download", data=csv,
                    file_name='foia-covid19.csv', mime='text/csv')
 # generate AgGrid
 gb = GridOptionsBuilder.from_dataframe(emdf)
-gb.configure_default_column(groupable=True, value=True,
-                            enableRowGroup=True, aggFunc="sum",
-                            editable=False)
-gb.configure_selection('single')
+gb.configure_default_column(value=True, editable=False)
+gb.configure_selection(selection_mode='single', groupSelectsChildren=False)
 gb.configure_pagination(paginationAutoPageSize=True)
 gb.configure_grid_options(domLayout='normal')
 gridOptions = gb.build()
 
 grid_response = AgGrid(emdf,
                        gridOptions=gridOptions,
-                       width='100%',
                        return_mode_values='AS_INPUT',
                        update_mode='SELECTION_CHANGED',
                        allow_unsafe_jscode=False,
