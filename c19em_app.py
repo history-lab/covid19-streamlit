@@ -72,13 +72,15 @@ c = alt.Chart(cntsdf).mark_bar().encode(
 st.altair_chart(c, use_container_width=True)
 
 """## Search Emails """
-form = st.form('query_params')
-begin_date = form.date_input('Start Date', datetime.date(2020, 1, 23))
-end_date = form.date_input('End Date', datetime.date(2020, 5, 6))
-persons = form.multiselect('Person(s):', person_list)
-orgs = form.multiselect('Organization(s):', org_list)
-locations = form.multiselect('Location(s):', loc_list)
-query = form.form_submit_button(label='Execute Search')
+with st.form(key='query_params'):
+    cols = st.columns(2)
+    begin_date = cols[0].date_input('Start Date', datetime.date(2020, 1, 23))
+    end_date = cols[1].date_input('End Date', datetime.date(2020, 5, 6))
+    persons = st.multiselect('Person(s):', person_list)
+    orgs = st.multiselect('Organization(s):', org_list)
+    locations = st.multiselect('Location(s):', loc_list)
+    query = st.form_submit_button(label='Execute Search')
+
 
 """ ## Search Results """
 entities = persons + orgs + locations
