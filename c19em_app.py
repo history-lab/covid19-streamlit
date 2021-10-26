@@ -59,7 +59,7 @@ Institute of Allergy and Infectious Diseases.
 emcnts = """
 select date(sent) date, count(*) emails
     from covid19.emails
-    where sent >= '2020-01-01'
+    where file_id = 1000 and sent >= '2020-01-01'
     group by date
     order by date;
 """
@@ -97,9 +97,10 @@ select sent,
     from covid19.emails e left join covid19.top_topic_emails t
         on (e.email_id = t.email_id)"""
 where = f"where sent between '{begin_date}' and '{end_date}' "
+qry_explain = where
+where += "and file_id = 1000 "
 where_ent = ''
 orderby = 'order by sent'
-qry_explain = where
 if entities:
     # build entity in list
     entincl = '('
