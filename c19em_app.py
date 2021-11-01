@@ -79,7 +79,12 @@ with st.form(key='query_params'):
     persons = st.multiselect('Person(s):', person_list)
     orgs = st.multiselect('Organization(s):', org_list)
     locations = st.multiselect('Location(s):', loc_list)
+    ftq_text = st.text_input('Full Text Search:', '',
+                             help='Perform full text search. Use double quotes \
+                             for phrases, OR for logical or, and - for \
+                             logical not.')
     query = st.form_submit_button(label='Execute Search')
+    where_ent = where_ft = ''
 
 
 """ ## Search Results """
@@ -115,9 +120,15 @@ if entities:
                 on (ent.entity_id = eem.entity_id)
             where ent.entity in """ + f'{entincl}) '
     qry_explain += f"and email references at least one of {entincl}"
+if ftq_text:
+    if ftq_text[0] == "'":         # replace single quote with double
+        ftq_text = '"' + ftq_text[1:-1:] + '"'
+    where_ft = f"and to_tsvector('english', body) @@ websearch_to_tsquery\
+('english', '{ftq_text}')"
+    qry_explain += f"and text body contains '{ftq_text}'"
 st.write(qry_explain)
 # execute query
-emqry = selfrom + where + where_ent + orderby
+emqry = selfrom + where + where_ent + where_ft + orderby
 emdf = pd.read_sql_query(emqry, conn)
 # emdf['sent'] = pd.to_datetime(emdf['sent'], utc=True)
 # download results as CSV
