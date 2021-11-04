@@ -29,7 +29,8 @@ def run_query(query):
 
 @st.cache
 def get_entity_list(qual):
-    entsfw = 'SELECT entity from covid19.entities where enttype '
+    entsfw = 'SELECT entity from covid19.entities where entity_id <= 515 and \
+    enttype '
     entorder = 'order by entity'
     lov = []
     rows = run_query(entsfw + qual + entorder)
@@ -118,7 +119,7 @@ if entities:
         (select eem.email_id
             from covid19.entities ent join covid19.entity_emails eem
                 on (ent.entity_id = eem.entity_id)
-            where ent.entity in """ + f'{entincl}) '
+            where ent.entity_id <= 515 and ent.entity in """ + f'{entincl}) '
     qry_explain += f"and email references at least one of {entincl}"
 if ftq_text:
     if ftq_text[0] == "'":         # replace single quote with double
