@@ -47,7 +47,7 @@ org_list = get_entity_list("= 'ORG' ")
 loc_list = get_entity_list("in ('GPE', 'LOC', 'NORP', 'FAC') ")
 
 
-st.selectbox('FOIA', ["Fauci Emails"])
+
 """
 The COVID-19 releated emails of Dr. Anthony Fauci, director of the National
 Institute of Allergy and Infectious Diseases.
@@ -140,7 +140,10 @@ st.download_button(label="CSV download", data=csv,
 gb = GridOptionsBuilder.from_dataframe(emdf)
 gb.configure_default_column(value=True, editable=False)
 gb.configure_selection(selection_mode='single', groupSelectsChildren=False)
-gb.configure_pagination(paginationAutoPageSize=True)
+# gb.configure_pagination(paginationAutoPageSize=True)
+# gb.configure_auto_height(autoHeight=False)
+# gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=50)
+
 gb.configure_grid_options(domLayout='normal')
 gridOptions = gb.build()
 
