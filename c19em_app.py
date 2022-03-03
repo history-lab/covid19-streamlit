@@ -151,16 +151,22 @@ grid_response = AgGrid(emdf,
                        allow_unsafe_jscode=False,
                        enable_enterprise_modules=False)
 selected = grid_response['selected_rows']
-# st.write(selected)
+
+# define DocumentCloud references
+dc_base = 'https://www.documentcloud.org/documents/'
+dc_id = '20793561'
+dc_slug = 'leopold-nih-foia-anthony-fauci-emails'
+dc_gif_sz = 'large'
+dc_doc_url = dc_base + dc_id + '-' + dc_slug
+dc_pg_gif = dc_base + dc_id + '/pages/' + dc_slug + '-p{pg}-' + dc_gif_sz + \
+            '.gif'
+
 if selected:
     """## Email Preview"""
     pg = int(selected[0]["pg_number"])
-    doc_url = f'https://s3.documentcloud.org/documents/20793561/leopold-nih-\
-foia-anthony-fauci-emails.pdf#page={pg}'
-    st.write(f'View the full document on DocumentCloud: {doc_url}')
-    st.markdown(f'<iframe src="https://drive.google.com/viewerng/viewer?\
-embedded=true&url=https://foiarchive-covid-19.s3.amazonaws.com/fauci/pdfs/\
-fauci_{pg}.pdf" width="100%" height="1100">', unsafe_allow_html=True)
+    st.write(f'View the full document on DocumentCloud: {dc_doc_url}')
+    st.markdown('<iframe src=' + dc_pg_gif.format(pg=pg) +
+                ' width="100%" height="1300">', unsafe_allow_html=True)
 else:
     st.write('Select row to view email')
 
