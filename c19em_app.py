@@ -10,6 +10,12 @@ from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 st.set_page_config(page_title="FOIA Explorer: COVID-19 Emails", layout="wide")
 st.title("FOIA Explorer: COVID-19 Emails")
+"""
+The COVID-19 releated emails of Dr. Anthony Fauci, director of the National
+Institute of Allergy and Infectious Diseases.
+- Source: MuckRock/DocumentCloud | Contributor: Jason Leopold
+- https://www.documentcloud.org/documents/20793561-leopold-nih-foia-anthony-fauci-emails
+"""
 
 
 # initialize database connection - uses st.cache to only run once
@@ -46,14 +52,6 @@ person_list = get_entity_list("= 'PERSON' ")
 org_list = get_entity_list("= 'ORG' ")
 loc_list = get_entity_list("in ('GPE', 'LOC', 'NORP', 'FAC') ")
 
-
-
-"""
-The COVID-19 releated emails of Dr. Anthony Fauci, director of the National
-Institute of Allergy and Infectious Diseases.
-- Source: MuckRock/DocumentCloud | Contributor: Jason Leopold
-- https://www.documentcloud.org/documents/20793561-leopold-nih-foia-anthony-fauci-emails
-"""
 
 """## Daily Email Volume, January - May 2020"""
 
@@ -140,8 +138,8 @@ st.download_button(label="CSV download", data=csv,
 gb = GridOptionsBuilder.from_dataframe(emdf)
 gb.configure_default_column(value=True, editable=False)
 gb.configure_selection(selection_mode='single', groupSelectsChildren=False)
-# gb.configure_pagination(paginationAutoPageSize=True)
-# gb.configure_auto_height(autoHeight=False)
+# gb.configure_pagination(paginationAutoPageSize=True) - original
+# gb.configure_auto_height(autoHeight=False)           - new, and next line
 # gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=50)
 
 gb.configure_grid_options(domLayout='normal')
@@ -157,22 +155,23 @@ selected = grid_response['selected_rows']
 
 # define DocumentCloud references
 dc_base = 'https://www.documentcloud.org/documents/'
+dc_aws = 'https://s3.documentcloud.org/documents/'
 dc_id = '20793561'
 dc_slug = 'leopold-nih-foia-anthony-fauci-emails'
 dc_gif_sz = 'large'
 dc_doc_url = dc_base + dc_id + '-' + dc_slug
 dc_pg_gif = dc_base + dc_id + '/pages/' + dc_slug + '-p{pg}-' + dc_gif_sz + \
             '.gif'
+dc_aws_pdf = dc_aws + dc_id + '/' + dc_slug + '.pdf'
 
 if selected:
     """## Email Preview"""
     pg = int(selected[0]["pg_number"])
-    st.write(f'View the full document on DocumentCloud: {dc_doc_url}')
+    st.write(f'Full email in DocumentCloud PDF: {dc_aws_pdf}#page={pg}')
     st.markdown('<iframe src=' + dc_pg_gif.format(pg=pg) +
                 ' width="100%" height="1300">', unsafe_allow_html=True)
 else:
     st.write('Select row to view email')
-
 """
 ## About
 The FOIA Explorer and associated tools were created by Columbia
