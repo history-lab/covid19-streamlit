@@ -45,13 +45,25 @@ def get_entity_list(qual):
     return(lov)
 
 
+@st.cache
+def get_topic_list():
+    tq = """select distinct top_topic
+               from covid19.fauci_emails
+               where top_topic is not null"""
+    lov = []
+    rows = run_query(tq)
+    for r in rows:
+        lov.append(r[0])
+    return(lov)
+
+
 conn = init_connection()
 
 # build dropdown lists for entity search
 person_list = get_entity_list("= 'PERSON' ")
 org_list = get_entity_list("= 'ORG' ")
 loc_list = get_entity_list("in ('GPE', 'LOC', 'NORP', 'FAC') ")
-
+topic_list = get_topic_list()
 
 """## Daily Email Volume, January - May 2020"""
 
@@ -78,6 +90,7 @@ with st.form(key='query_params'):
     persons = st.multiselect('Person(s):', person_list)
     orgs = st.multiselect('Organization(s):', org_list)
     locations = st.multiselect('Location(s):', loc_list)
+    topics = st.multiselect('Topic(s):', topic_list)
     ftq_text = st.text_input('Full Text Search:', '',
                              help='Perform full text search. Use double quotes \
                              for phrases, OR for logical or, and - for \
@@ -89,47 +102,42 @@ with st.form(key='query_params'):
 """ ## Search Results """
 entities = persons + orgs + locations
 selfrom = """
-select sent,
-       coalesce(subject, '') subject,
-       coalesce(topic, '') topic,
-       coalesce(from_email, '') "from",
-       coalesce(to_emails, '') "to",
-       -- coalesce(cc_emails, '') cc,
-       -- coalesce(substr(body, 1, 1024), '') body,
-       e.email_id,
-       file_pg_start pg_number
-    from covid19.emails e left join covid19.top_topic_emails t
-        on (e.email_id = t.email_id)"""
-where = f"where sent between '{begin_date}' and '{end_date}' "
-qry_explain = where
-where += "and file_id = 1000 "
-where_ent = ''
-orderby = 'order by sent'
+select email_id, pg_number, sent, subject, from_email "from", to_emails "to",
+       top_topic, entities
+    from covid19.fauci_emails
+"""
+where = f"where sent between '{begin_date}' and '{end_date}'"
+qry_explain = where[6:].replace("'", "")
+where_ent = where_ft = where_top = ''
 if entities:
     # build entity in list
-    entincl = '('
+    entincl = "'{"
     for e in entities:
-        entincl += f"'{e}', "
-    entincl = entincl[:-2] + ')'
-    # form subquery
-    where_ent = """
-    and e.email_id in
-        (select eem.email_id
-            from covid19.entities ent join covid19.entity_emails eem
-                on (ent.entity_id = eem.entity_id)
-            where ent.entity_id <= 515 and ent.entity in """ + f'{entincl}) '
-    qry_explain += f"and email references at least one of {entincl}"
+        entincl += f'"{e}", '
+    entincl = entincl[:-2] + "}'"
+    where_ent = f" and entities && {entincl}::text[]"
+    tq = ''
+    if len(entities) > 1:
+        tq = 'at least one of'
+    qry_explain += f" and email references {tq} {entincl[2:-2]}"
+if topics:
+    topincl = "("
+    for t in topics:
+        topincl += f"'{t}', "
+    topincl = topincl[:-2] + ')'
+    where_top = f" and top_topic in {topincl}"
+    qry_explain += f" and topic is {topincl[1:-1]}"
 if ftq_text:
     if ftq_text[0] == "'":         # replace single quote with double
         ftq_text = '"' + ftq_text[1:-1:] + '"'
-    where_ft = f"and to_tsvector('english', body) @@ websearch_to_tsquery\
+    where_ft = f" and to_tsvector('english', body) @@ websearch_to_tsquery\
 ('english', '{ftq_text}')"
-    qry_explain += f"and text body contains '{ftq_text}'"
-st.write(qry_explain)
+    qry_explain += f' and text body contains "{ftq_text}"'
 # execute query
-emqry = selfrom + where + where_ent + where_ft + orderby
+emqry = selfrom + where + where_ent + where_top + where_ft + ' order by sent'
 emdf = pd.read_sql_query(emqry, conn)
-# emdf['sent'] = pd.to_datetime(emdf['sent'], utc=True)
+emcnt = len(emdf.index)
+st.markdown(f"{emcnt} emails {qry_explain}")
 # download results as CSV
 csv = emdf.to_csv().encode('utf-8')
 st.download_button(label="CSV download", data=csv,
@@ -137,12 +145,21 @@ st.download_button(label="CSV download", data=csv,
 # generate AgGrid
 gb = GridOptionsBuilder.from_dataframe(emdf)
 gb.configure_default_column(value=True, editable=False)
+gb.configure_grid_options(domLayout='normal')
 gb.configure_selection(selection_mode='single', groupSelectsChildren=False)
+gb.configure_column('email_id', hide=True)
+gb.configure_column('pg_number', hide=True)
+gb.configure_column('top_topic', hide=True)
+gb.configure_column('entities', hide=True)
+gb.configure_column('sent', maxWidth=150)
+gb.configure_column('subject', maxWidth=475)
+gb.configure_column('from', maxWidth=200)
+gb.configure_column('to', maxWidth=350)
+
 # gb.configure_pagination(paginationAutoPageSize=True) - original
 # gb.configure_auto_height(autoHeight=False)           - new, and next line
 # gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=50)
 
-gb.configure_grid_options(domLayout='normal')
 gridOptions = gb.build()
 
 grid_response = AgGrid(emdf,
@@ -165,13 +182,19 @@ dc_pg_gif = dc_base + dc_id + '/pages/' + dc_slug + '-p{pg}-' + dc_gif_sz + \
 dc_aws_pdf = dc_aws + dc_id + '/' + dc_slug + '.pdf'
 
 if selected:
-    """## Email Preview"""
+    """## Email Details"""
+    el_disp = selected[0]["entities"][1:-1].replace("'", "")
+    st.markdown(f'**Entities**: `{el_disp}`')
+    st.markdown(f'**Topic Words:** `{selected[0]["top_topic"]}`')
     pg = int(selected[0]["pg_number"])
-    st.write(f'Full email in DocumentCloud PDF: {dc_aws_pdf}#page={pg}')
+    st.markdown('**Email Preview:** ')
     st.markdown('<iframe src=' + dc_pg_gif.format(pg=pg) +
                 ' width="100%" height="1300">', unsafe_allow_html=True)
+    st.markdown(f'[**View Full Email on DocumentCloud**]({dc_aws_pdf}#page=\
+{pg})')
+
 else:
-    st.write('Select row to view email')
+    st.write('Select row to view additional email details')
 """
 ## About
 The FOIA Explorer and associated tools were created by Columbia
