@@ -151,10 +151,10 @@ gb.configure_column('email_id', hide=True)
 gb.configure_column('pg_number', hide=True)
 gb.configure_column('top_topic', hide=True)
 gb.configure_column('entities', hide=True)
-gb.configure_column('sent', maxWidth=150)
-gb.configure_column('subject', maxWidth=475)
-gb.configure_column('from', maxWidth=200)
-gb.configure_column('to', maxWidth=350)
+# gb.configure_column('sent', maxWidth=150)
+# gb.configure_column('subject', maxWidth=475)
+# gb.configure_column('from', maxWidth=200)
+# gb.configure_column('to', maxWidth=350)
 
 # gb.configure_pagination(paginationAutoPageSize=True) - original
 # gb.configure_auto_height(autoHeight=False)           - new, and next line
