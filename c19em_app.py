@@ -8,13 +8,18 @@ from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 
-st.set_page_config(page_title="FOIA Explorer: COVID-19 Emails", layout="wide")
-st.title("FOIA Explorer: COVID-19 Emails")
+st.set_page_config(page_title="COVID-19 Archive Prototype", layout="wide")
+st.title("COVID-19 Archive Prototype")
 """
-The COVID-19 releated emails of Dr. Anthony Fauci, director of the National
-Institute of Allergy and Infectious Diseases.
-- Source: MuckRock/DocumentCloud | Contributor: Jason Leopold
-- https://www.documentcloud.org/documents/20793561-leopold-nih-foia-anthony-fauci-emails
+Our COVID-19 Archive aims to aggregate digitized documents related to the the
+initial phases of the pandemic. To start, we have processed the emails of
+Dr. Anthony Fauci, director of the National Institute of Allergy and Infectious
+Diseases. They are now divided into individual emails, which can be searched
+and sorted with the original metadata (from, to, subject, etc.) as well as new
+metadata we generated using topic modeling and named entity recognition.
+
+* Source: MuckRock/DocumentCloud | Contributor: Jason Leopold
+* https://www.documentcloud.org/documents/20793561-leopold-nih-foia-anthony-fauci-emails
 """
 
 
