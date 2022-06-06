@@ -202,7 +202,7 @@ else:
     st.write('Select row to view additional email details')
 """
 ## About
-The FOIA Explorer and associated tools were created by Columbia
+The COVID-19 Archive Prototype and associated tools were created by Columbia
 Univesity's [History Lab](http://history-lab.org) under a grant from the Mellon
 Foundation's [Email Archives: Building Capacity and Community]
 (https://emailarchivesgrant.library.illinois.edu/blog/) program.
