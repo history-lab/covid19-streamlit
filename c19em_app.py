@@ -24,21 +24,20 @@ metadata we generated using topic modeling and named entity recognition.
 
 
 # initialize database connection - uses st.cache to only run once
-@st.cache(allow_output_mutation=True,
-          hash_funcs={"_thread.RLock": lambda _: None})
+@st.experimental_singleton
 def init_connection():
     return psycopg2.connect(**st.secrets["postgres"])
 
 
 # perform query - ses st.cache to only rerun once
-@st.cache
+@st.experimental_memo
 def run_query(query):
     with conn.cursor() as cur:
         cur.execute(query)
         return cur.fetchall()
 
 
-@st.cache
+@st.experimental_memo
 def get_entity_list(qual):
     entsfw = 'SELECT entity from covid19.entities where entity_id <= 515 and \
     enttype '
@@ -50,7 +49,7 @@ def get_entity_list(qual):
     return(lov)
 
 
-@st.cache
+@st.experimental_memo
 def get_topic_list():
     tq = """select distinct top_topic
                from covid19.fauci_emails
@@ -160,10 +159,6 @@ gb.configure_column('sent', maxWidth=150)
 gb.configure_column('subject', maxWidth=600)
 gb.configure_column('from', maxWidth=225)
 gb.configure_column('to', maxWidth=425)
-
-# gb.configure_pagination(paginationAutoPageSize=True) - original
-# gb.configure_auto_height(autoHeight=False)           - new, and next line
-# gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=50)
 
 gridOptions = gb.build()
 
