@@ -24,7 +24,7 @@ metadata we generated using topic modeling and named entity recognition.
 
 
 # initialize database connection - uses st.cache to only run once
-@st.experimental_singleton
+@st.experimental_singleton(suppress_st_warning=True)
 def init_connection():
     return psycopg2.connect(**st.secrets["postgres"])
 
