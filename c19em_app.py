@@ -197,8 +197,28 @@ else:
     st.write('Select row to view additional email details')
 """
 ## About
-The COVID-19 Archive Prototype and associated tools were created by Columbia
-Univesity's [History Lab](http://history-lab.org) under a grant from the Mellon
-Foundation's [Email Archives: Building Capacity and Community]
-(https://emailarchivesgrant.library.illinois.edu/blog/) program.
+The COVID-19 Archive and its associated tools were created 
+and are maintained by Columbia University's 
+[History Lab](http://history-lab.org).
+
+### Sponsors
 """
+logo, description, _ = st.columns([1,2,2])
+with logo:
+    st.image('static/nhprc-logo.png')
+with description:
+    """
+Current funding for the COVID-19 Archive is provided by an
+archival project grant from the [National Historical Publications & Records
+Commission (NHPRC)](https://www.archives.gov/nhprc). 
+    """
+logo, description, _ = st.columns([1,2,2])
+with logo:
+    st.image('static/mellon-logo.png')
+with description:  
+    """
+Initial funding for the tools associated with the COVID-19 Archive
+was provided by the Mellon Foundation's [Email Archives:
+Building Capacity and Community](https://emailarchivesgrant.library.illinois.edu)
+program.
+    """
