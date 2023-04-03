@@ -197,9 +197,8 @@ else:
     st.write('Select row to view additional email details')
 """
 ## About
-The COVID-19 Archive and its associated tools were created 
-and are maintained by Columbia University's 
-[History Lab](http://history-lab.org).
+Columbia University's [History Lab](http://history-lab.org)
+maintains the COVID-19 Archive and its associated tools.
 
 ### Sponsors
 """
